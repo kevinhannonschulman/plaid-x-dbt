@@ -1,0 +1,92 @@
+version: 2
+
+sources:
+  - name: plaid_sandbox
+    description: A clone of a local Postgres database with Plaid Sandbox API data
+    database: plaid-x-dbt
+    schema: plaid_sandbox
+    tables:
+      - name: balance
+        description: Raw balance data
+        columns:
+          - name: account_id
+            description: Primary key for balance data
+            tests:
+              - unique
+              - not_null
+          - name: mask
+            description: Last 2-4 alphanumeric characters of an account's official account number
+          - name: name
+            description: Name of the account, either assigned by the user or by the financial institution itself
+          - name: official_name
+            description: The official name of the account as given by the financial institution
+          - name: subtype
+            description: subtype of account
+            tests:
+              - accepted_values:
+                  values: ['401a', '401k', '403B', '457b', '529', 'brokerage', 'cash isa', 'education savings account', 'ebt', 'fixed annuity',
+              'gic', 'health reimbursement arrangement', 'hsa', 'isa', 'ira', 'lif', 'life insurance', 'lira', 'lrif', 'lrsp', 'non-taxable brokerage account',
+              'other', 'other insurance', 'other annuity', 'prif', 'rdsp', 'resp', 'rlif', 'rrif', 'pension', 'profit sharing plan', 'retirement', 'roth',
+              'roth 401k', 'rrsp', 'sep ira', 'simple ira', 'sipp', 'stock plan', 'thrift savings plan', 'tfsa', 'trust', 'ugma', 'utma', 'variable annuity',
+              'credit card', 'paypal', 'cd', 'checking', 'savings', 'money market', 'prepaid', 'auto', 'business', 'commercial', 'construction',
+              'consumer', 'home equity', 'loan', 'mortgage', 'overdraft', 'line of credit', 'student', 'cash management', 'keogh', 'mutual fund', 'recurring',
+              'rewards', 'safe deposit', 'sarsep', 'payroll', 'null']
+          - name: type
+            description: type of account
+            tests:
+              - accepted_values:
+                  values: ['investment', 'credit', 'depository', 'loan', 'brokerage', 'other']
+          - name: balances_available
+            description: The amount of funds available to be withdrawn from the account, as determined by the financial institution
+          - name: balances_current
+            description: The total amount of funds in or owed by the account
+          - name: balances_iso_currency_code
+            description: The ISO-4217 currency code of the balance
+          - name: balances_limit
+            description: For credit-type accounts, this represents the credit limit
+      - name: transactions
+        description: Raw transactions data
+        columns:
+          - name: account_id
+            description: Foreign key for transactions data
+            tests:
+              - unique
+              - not_null
+              - relationships:
+                  to: ref('balance')
+                  field: account_id
+          - name: amount
+            description: The settled value of the transaction, denominated in the account's currency, as stated in iso_currency_code or unofficial_currency_code,
+             Positive values when money moves out of the account; negative values when money moves in. For example, debit card purchases are positive; credit card payments,
+             direct deposits, and refunds are negative
+          - name: category
+            description: A hierarchical array of the categories to which this transaction belongs
+          - name: category_id
+            description: The ID of the category to which this transaction belongs
+          - name: date
+            description: For pending transactions, the date that the transaction occurred; for posted transactions, the date that the transaction posted
+          - name: iso_currency_code
+            description: The ISO-4217 currency code of the transaction
+          - name: merchant_name
+            description: The merchant name, as extracted by Plaid from the name field
+          - name: name
+            description: The merchant name or transaction description
+          - name: payment_channel
+            description: The channel used to make a payment
+            tests:
+              - accepted_values:
+                  values: ['online', 'in store', 'other']
+          - name: transaction_id
+            description: Primary key for transactions data; The unique ID of the transaction
+            tests:
+              - unique
+              - not_null
+          - name: transaction_type
+            description: Place where transaction occurred
+            tests:
+              - accepted_values:
+                  values: ['digital', 'place', 'special', 'unresolved']
+          - name: location_store_number
+            description: The merchant defined store number where the transaction occurred
+          - name: payment_meta_payment_method
+            description: The type of transfer, e.g. 'ACH'

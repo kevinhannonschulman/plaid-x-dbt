@@ -1,0 +1,53 @@
+version: 2
+
+models:
+  - name: stg_transactions
+    description: Cleaned Plaid Sandbox transaction data
+    columns: 
+      - name: account_id
+        description: Foreign key for transactions data
+        tests:
+          - unique
+          - not_null
+        relationships:
+          to: ref('stg_balance')
+          field: account_id
+      - name: category
+        description: Transaction category
+      - name: subcategory
+        description: Transaction subcategory
+      - name: amount
+        description: Transaction amount (USD)
+      - name: date
+        description: For pending transactions, the date that the transaction occurred; for posted transactions, the date that the transaction posted
+      - name: name
+        description: The merchant name or transaction description
+      - name: merchant_name
+        description: The merchant name, as extracted by Plaid from the name field
+      - name: transaction_id
+        description: Primary key for transactions data; The unique ID of the transaction
+        tests:
+              - unique
+              - not_null 
+  - name: stg_balance
+    description: Cleaned Plaid Sandbox balance data
+    columns:
+      - name: account_id
+        description: Primary key for balance data
+        tests:
+          - unique
+          - not_null
+          - relationships:
+              to: ref ('stg_transactions')
+              field: account_id
+      - name: name
+        description: Name of the account, either assigned by the user or by the financial institution itself
+      - name: official_name
+        description: The official name of the account as given by the financial institution
+      - name: type
+        description: type of account
+        tests:
+           - accepted_values:
+               values: ['investment', 'credit', 'depository', 'loan', 'brokerage', 'other']
+      - name: current_balance
+        description: The total amount of funds in or owed by the account
