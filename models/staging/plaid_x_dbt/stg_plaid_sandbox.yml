@@ -7,7 +7,6 @@ models:
       - name: account_id
         description: Foreign key for transactions data
         tests:
-          - unique
           - not_null
         relationships:
           to: ref('stg_balance')
@@ -37,13 +36,12 @@ models:
         tests:
           - unique
           - not_null
-          - relationships:
-              to: ref ('stg_transactions')
-              field: account_id
       - name: name
         description: Name of the account, either assigned by the user or by the financial institution itself
       - name: official_name
         description: The official name of the account as given by the financial institution
+      - name: int_rate
+        description: interest rate for account
       - name: type
         description: type of account
         tests:
@@ -51,3 +49,7 @@ models:
                values: ['investment', 'credit', 'depository', 'loan', 'brokerage', 'other']
       - name: current_balance
         description: The total amount of funds in or owed by the account
+      - name: available_balance
+        description: The amount of funds available to be withdrawn from the account. For credit-type accounts, the available balance typically equals the limit less the current balance.
+      - name: balances_limit
+        description: For credit-type accounts, this represents the credit limit

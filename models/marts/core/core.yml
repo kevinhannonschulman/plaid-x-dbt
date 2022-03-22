@@ -1,0 +1,63 @@
+version: 2
+
+models:
+  - name: dim_accounts
+    description: Summary of current account information
+    columns:
+      - name: account_id
+        description: Unique ID of specific account
+      - name: name
+        description: Name of the account, either assigned by the user or by the financial institution itself
+      - name: official_name
+        description: The official name of the account as given by the financial institution
+      - name: type
+        description: type of account (e.g. investment, depository, credit)
+      - name: current_balance
+        description: The total amount of funds in or owed by the account
+      - name: available_balance
+        description: The amount of funds available to be withdrawn from the account
+      - name: balances_limit
+        description: For credit-type accounts, this represents the credit limit
+      - name: current_interest
+        description: Current interest for account period (e.g. monthly interest due for credit card or interest accrued by savings account)
+      - name: net_inflow_outflow
+        description: Net inflow/outflow of funds from each account
+  - name: fct_annual_largest_transactions
+    description: Largest annual transactions
+    columns:
+      - name: account_id
+        description: Unique ID of account used for purchase
+      - name: name
+        description: Name of purchasing account (e.g. Plaid Credit Card)
+      - name: month
+        description: Month of purchase
+      - name: amount
+        description: Amount of transaction (USD)
+      - name: category
+        description: Purchase category
+      - name: merchant_name
+        description: Name of merchant
+      - name: transaction_id
+        description: Unique ID of transaction
+  - name: fct_monthly_transactions
+    description: Monthly transaction info by category/subcategory
+    columns: 
+      - name: month
+        description: Month of aggregated transactions
+      - name: amount
+        description: Total monthly transaction amount (USD)  
+      - name: category
+        description: Transaction category
+      - name: subcategory
+        description: Transaction subcategory
+  - name: fct_YTD_Merchant
+    description: Year-to-date transaction total per merchant
+    columns:
+      - name: year
+        description: year of transaction
+      - name: merchant_name
+        description: Name of merchant
+      - name: category
+        description: Merchant category
+      - name: yearly_total
+        description: Yearly total transaction from merchant

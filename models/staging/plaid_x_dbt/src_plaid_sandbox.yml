@@ -50,7 +50,6 @@ sources:
           - name: account_id
             description: Foreign key for transactions data
             tests:
-              - unique
               - not_null
               - relationships:
                   to: ref('balance')
